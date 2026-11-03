@@ -2,7 +2,9 @@ name: Ingest Wikimedia events
 
 on:
   schedule:
-    - cron: "*/5 * * * *"    # every 5 min (GitHub's minimum; "* * * * *" is not honored)
+    # Every 10 min at off-peak minutes (:02, :12, ...). GitHub delays/drops jobs
+    # at busy marks like :00 and :05, so these are less likely to be skipped.
+    - cron: "2,12,22,32,42,52 * * * *"
   workflow_dispatch:          # allow manual runs from the Actions tab
 
 # Never run two ingestions at once (they share the resume pointer in the DB).
