@@ -2,7 +2,7 @@ name: Ingest Wikimedia events
 
 on:
   schedule:
-    - cron: "*/5 * * * *"    # every 5 min (GitHub's minimum; "* * * * *" is not honored)
+    - cron: "*/5 * * * *"    # every 1 min (GitHub's minimum; "* * * * *" is not honored)
   workflow_dispatch:          # allow manual runs from the Actions tab
 
 # Never run two ingestions at once (they share the resume pointer in the DB).
@@ -32,8 +32,8 @@ jobs:
           python wikimedia_enwiki_qc_to_neon.py
           --stop-when-live
           --run-seconds 240
-          --batch-size 1000
-          --max-per-minute 1000
+          --batch-size 2000
+          --max-per-minute 2000
           --retention-hours 0
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}
