@@ -142,6 +142,8 @@ def delete_older_than(conn, hours: int = 48) -> int:
 
 def is_live(evt: dict, within_seconds: float = 10) -> bool:
     """True when the event happened within the last few seconds (we've caught up)."""
+    if evt.get("wiki") != WIKI or evt.get("type") not in KEEP_TYPES:
+        return False
     dt = (evt.get("meta") or {}).get("dt")
     if not dt:
         return False
