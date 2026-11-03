@@ -26,6 +26,6 @@ jobs:
 
       # Deletes rows whose event_time is older than 48 hours, then exits.
       - name: Delete rows older than 48h
-        run: python wikimedia_enwiki_qc_to_neon.py --cleanup-only --retention-hours 48
+        run: python backend/ingestion.py --cleanup-only --retention-hours 48
         env:
           DATABASE_URL: ${{ secrets.DATABASE_URL }}

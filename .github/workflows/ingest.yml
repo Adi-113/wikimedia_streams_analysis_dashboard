@@ -29,7 +29,7 @@ jobs:
       # previous run, then exits once it reaches the live stream.
       - name: Ingest
         run: >
-          python wikimedia_enwiki_qc_to_neon.py
+          python backend/ingest.py
           --stop-when-live
           --run-seconds 240
           --batch-size 1000
