@@ -1,0 +1,31 @@
+name: Delete old Wikimedia events
+
+on:
+  schedule:
+    - cron: "37 */6 * * *"   # every 6 hours at :37 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: wikimedia-cleanup
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Deletes rows whose event_time is older than 48 hours, then exits.
+      - name: Delete rows older than 48h
+        run: python wikimedia_enwiki_qc_to_neon.py --cleanup-only --retention-hours 48
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}

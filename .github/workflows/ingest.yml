@@ -1,0 +1,39 @@
+name: Ingest Wikimedia events
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"    # every 5 min (GitHub's minimum; "* * * * *" is not honored)
+  workflow_dispatch:          # allow manual runs from the Actions tab
+
+# Never run two ingestions at once (they share the resume pointer in the DB).
+concurrency:
+  group: wikimedia-ingest
+  cancel-in-progress: false
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      # Resumes from the last saved event id, replays the backlog since the
+      # previous run, then exits once it reaches the live stream.
+      - name: Ingest
+        run: >
+          python wikimedia_enwiki_qc_to_neon.py
+          --stop-when-live
+          --run-seconds 240
+          --batch-size 1000
+          --max-per-minute 1000
+          --retention-hours 0
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
