@@ -29,7 +29,7 @@ jobs:
       # previous run, then exits once it reaches the live stream.
       - name: Ingest
         run: >
-          python backend/ingest.py
+          python backend/ingestion.py
           --stop-when-live
           --run-seconds 240
           --batch-size 1000
